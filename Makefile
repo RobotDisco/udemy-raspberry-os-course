@@ -40,3 +40,6 @@ boot.o: boot.s
 
 clean:
 	rm kernel8.img kernel main.o boot.o
+
+run:
+	qemu-system-aarch64 -M raspi3b -serial stdio -kernel kernel8.img

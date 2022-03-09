@@ -20,6 +20,12 @@ make
 make clean
 ```
 
+## How to run
+
+```
+make run
+```
+
 ## Contributing
 
 This is me working out the content for a course, so please don't contribute anything.
