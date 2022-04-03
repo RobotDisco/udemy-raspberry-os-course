@@ -20,7 +20,7 @@ SECTIONS
     }
     
     /* Include any rodata definitions from all our input files */
-    .rodata :{
+    .rodata : {
         *(.rodata)
     }
 
