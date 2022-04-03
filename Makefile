@@ -16,7 +16,7 @@ LD := aarch64-unknown-linux-gnu-ld
 # $< - first prerequisite
 # $^ - all prerequisites
 
-OBJECTS :=  boot.o main.o lib.o uart.o
+OBJECTS :=  boot.o main.o lib.o uart.o print.o
 LINK_SCRIPT := link_script.lds
 
 # Convert our linked ELF binary into a raw one (termed "binary")
@@ -34,6 +34,8 @@ kernel: $(LINK_SCRIPT) $(OBJECTS)
 # registers.
 main.o: main.c
 	$(CC) -g -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@
+print.o: print.c
+	$(CC) -g -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@
 uart.o: uart.c
 	$(CC) -g -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@
 
@@ -44,7 +46,7 @@ lib.o: lib.s
 	$(CC) -c $^ -o $@
 
 clean:
-	rm kernel8.img kernel main.o boot.o lib.o uart.o
+	rm kernel8.img kernel main.o boot.o lib.o uart.o print.o
 
 run:
 	qemu-system-aarch64 -M raspi3b -serial stdio -kernel kernel8.img
