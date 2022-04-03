@@ -33,6 +33,9 @@ SECTIONS
     }
 
     .bss : {
+        /* We want labels for the bss area boundaries */
+        bss_start = .;
         *(.bss)
+        bss_end = .;
     }
 }

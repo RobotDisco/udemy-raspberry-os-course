@@ -29,6 +29,14 @@ kernel_entry:
     // Reserve membery address 0x80000 and above for the kernel.
     // Our stack pointer will grow downwards from here.
     mov sp, #0x80000
+
+    // zero out the bss region
+    // we are assuming that the value at address 0 is 0.
+    ldr x0, =bss_start
+    ldr x1, =bss_end
+    sub x2, x1, x0
+    mov x1, #0
+    bl memset
     // jump to the KernelMain() function, defined in C
     // bl sets a link register, I don't know what that is.
     bl KernelMain
