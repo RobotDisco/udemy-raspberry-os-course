@@ -5,7 +5,7 @@ CC := aarch64-unknown-linux-gnu-gcc
 LD := aarch64-unknown-linux-gnu-ld
 
 # clean is not a file, so don't look for one
-.PHONY: clean
+.PHONY: clean run
 
 # An explicit rule for each file. This means running make without any
 # arguments will first run kernel8.img -- our final output -- which will
