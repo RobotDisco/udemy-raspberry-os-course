@@ -26,7 +26,42 @@ end:
     b end
 
 kernel_entry:
-    // Reserve membery address 0x80000 and above for the kernel.
+    // ARM device starts in exception level 2; move to exception
+    // level 1 and configure some system registers
+    mrs x0, currentel
+    // shift x0 right by two since bits 2-3 contain system level
+    lsr x0, x0, #2
+    cmp x0, #2
+    // if system level isn't 2 on start, abort boot
+    bne end
+
+    // zero out system configuration registers
+    msr sctlr_el1, xzr
+    // Set bit which indicates we are in 64-bit mode
+    mov x0, #(1 << 31)
+    msr hcr_el2, x0
+
+    // The only way to go down an exception level on ARM systems is through an
+    // exception return, which restores the PSTATE and return address during
+    // the instruction that triggered the exception. Since we're booting up,
+    // we fake the return state by manually setting the return registers for
+    // the boot exception level 2 since we want to drop down to 1.
+
+    // disable interrupts handling and specify exception level 1
+    // (see PSTATE format)
+    mov x0, #0b1111000101
+    msr spsr_el2, x0
+
+    // grab the address of the specified label and set it in the return entry
+    // register
+    adr x0, el1_entry
+    msr elr_el2, x0
+
+    // return from our fake exception
+    eret
+
+el1_entry:
+    // Reserve memory address 0x80000 and above for the kernel.
     // Our stack pointer will grow downwards from here.
     mov sp, #0x80000
 
