@@ -8,6 +8,8 @@
 .global memmove
 .global memcpy
 
+.global get_el
+
 delay:
     # x0 is, by convention, where our only input variable is set
     # subtract one from x0 
@@ -130,4 +132,11 @@ copy:
     bne copy
 
 memcpy_end:
+    ret
+
+get_el:
+    mrs x0, currentel
+    # Bits 0-1 aren't used, bits 2-3 represent current exception level
+    # so shift right by 2 and return.
+    lsr x0, x0, #2
     ret

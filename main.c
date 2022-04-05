@@ -1,4 +1,5 @@
 #include "debug.h"
+#include "lib.h"
 #include "uart.h"
 #include "print.h"
 
@@ -10,6 +11,7 @@ void KernelMain(void) {
     printk("Test decimal %d\r\n", -1 * value);
     printk("Test hexadecimal %x\r\n", value);
 
+    printk("Current ARM exception level: %u\r\n", (uint64_t) get_el());
     ASSERT(0);
 
     while (1) {
