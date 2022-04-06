@@ -72,6 +72,12 @@ el1_entry:
     sub x2, x1, x0
     mov x1, #0
     bl memset
+
+    // populate vector table address register for exception level 1
+    // with the address for our defined vector table
+    ldr x0, =vector_table
+    msr vbar_el1, x0
+
     // jump to the KernelMain() function, defined in C
     // bl sets a link register, I don't know what that is.
     bl KernelMain
