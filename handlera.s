@@ -63,11 +63,11 @@ current_el_spn_serror:
 // (userspace) just yet, so leave unimplemented
 .balign 0x80
 lower_el_aarch64_sync:
-    b error
+    b sync_handler
 
 .balign 0x80
 lower_el_aarch64_irq:
-    b error
+    b irq_handler
 
 .balign 0x80
 lower_el_aarch64_fiq:

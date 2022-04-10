@@ -81,5 +81,13 @@ el1_entry:
     // jump to the KernelMain() function, defined in C
     // bl sets a link register, I don't know what that is.
     bl KernelMain
+    // drop into exception level 0 via fake exception return
+    mov x0, #0
+    msr spsr_el1, x0
+    adr x0, el0_entry
+    msr elr_el1, x0
+    eret
+
+el0_entry:
     // if the kernel ever stops running, jump to our infinite loop
     b end
