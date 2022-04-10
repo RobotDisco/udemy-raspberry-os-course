@@ -26,11 +26,16 @@
 #define UART0_IBRD IO_BASE_ADDR + 0x1024
 /* Interrupt Mask Set Clear Register, 32 bits */
 #define UART0_IMSC IO_BASE_ADDR + 0x1038
+/* Interrupt Mask Interrupt Register */
+#define UART0_MIS IO_BASE_ADDR + 0x1040
+/* Interrupt Clear Register */
+#define UART0_ICR IO_BASE_ADDR + 0x1044
 
 unsigned char read_char(void);
 void write_char(unsigned char c);
 void write_string(const char *string);
 void init_uart(void);
+void uart_handler(void);
 
 #endif
 

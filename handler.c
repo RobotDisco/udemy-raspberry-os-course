@@ -2,6 +2,7 @@
 #include "lib.h"
 #include "print.h"
 #include "stdint.h"
+#include "uart.h"
 
 /* I guess these declaration allows an externally written assembler function
  * to be referenced? I don't know why this is required when it hasn't been
@@ -14,6 +15,18 @@ void set_timer_interval(uint32_t value);
 
 static uint32_t timer_interval = 0;
 static uint64_t ticks = 0;
+
+void init_interrupt_controller(void) {
+    out_word(DISABLE_BASIC_IRQS, 0xfffffff);
+    out_word(DISABLE_IRQS_1, 0xfffffff);
+    out_word(DISABLE_IRQS_2, 0xfffffff);
+
+    /* We need to enable the 57th entry in our interrupt table.
+     * Our table is split between ENABLE_IRQS_1 (0 - 31) and
+     * ENABLE_IRQS_2 (32-63). 57 - 32 = 25.
+     */
+    out_word(ENABLE_IRQS_2, (1 << 25));
+}
 
 void init_timer(void) {
     /* Why do we do this in C AND Assembler?
@@ -40,6 +53,10 @@ static void timer_interrupt_handler(void) {
     }
 }
 
+static uint32_t get_irq_number(void) {
+    return in_word(IRQ_BASIC_PENDING);
+}
+
 void handler(uint64_t exception_id, uint64_t esr, uint64_t elr) {
     uint32_t irq;
 
@@ -52,8 +69,13 @@ void handler(uint64_t exception_id, uint64_t esr, uint64_t elr) {
             if (irq & (1 << 1)) {
                 timer_interrupt_handler();
             } else {
-                printk("unknown irq \r\n");
-                while (1) {}
+                irq = get_irq_number();
+                if (irq & (1 << 19)) {
+                        uart_handler();
+                } else {
+                    printk("unknown irq \r\n");
+                    while (1) {}
+                }
             }
             break;
         default:
