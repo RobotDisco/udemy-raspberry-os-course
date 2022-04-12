@@ -1,5 +1,7 @@
-#ifndef _UART_H
-#define _UART_H
+#ifndef __UART_H__
+#define __UART_H__
+
+#include "memory.h"
 
 /* See Raspberry Pi 3's UART manual for reference
  * https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf
@@ -10,7 +12,7 @@
  * 
  * I don't know why 0x7Exxxxxx makps to 0x3Fxxxxxx
  */
-#define IO_BASE_ADDR 0x3f200000
+#define IO_BASE_ADDR P2VMem(0x3f200000)
 
 /* Data Register, 32 bits */
 #define UART0_DR IO_BASE_ADDR + 0x1000
@@ -38,6 +40,3 @@ void init_uart(void);
 void uart_handler(void);
 
 #endif
-
-
-

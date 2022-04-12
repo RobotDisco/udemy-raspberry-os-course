@@ -6,10 +6,11 @@
 ENTRY(start)
 SECTIONS
 {
-    /* Set current location to 0x80000, our designed userspace memory boundary
+    /* Set current location to our designed userspace memory boundary
      * All further instructions will load data into the memory above this
      * location until told otherwise */
-    . = 0x80000;
+    /* Note: this is the real physical address, not a virtual one) */
+    . = 0xffff000000080000;
 
     /* Ensure boot.o's .text definitions go first (since it's our bootloader.)
      * After that include them from all the inputs

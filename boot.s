@@ -65,6 +65,10 @@ el1_entry:
     // Our stack pointer will grow downwards from here.
     mov sp, #0x80000
 
+    // setup virtual memory and MMU
+    bl setup_vm
+    bl enable_mmu
+
     // zero out the bss region
     // we are assuming that the value at address 0 is 0.
     ldr x0, =bss_start
@@ -78,16 +82,16 @@ el1_entry:
     ldr x0, =vector_table
     msr vbar_el1, x0
 
-    // jump to the KernelMain() function, defined in C
-    // bl sets a link register, I don't know what that is.
-    bl KernelMain
-    // drop into exception level 0 via fake exception return
-    mov x0, #0
-    msr spsr_el1, x0
-    adr x0, el0_entry
-    msr elr_el1, x0
-    eret
+    // Set stack pointer to physical address
+    mov x0, #0xffff000000000000
+    add sp, sp, x0
 
-el0_entry:
+    // jump to the KernelMain() function, defined in C
+    // we use to load address directly but now use a register so we can
+    // translate virtual memory into physical memory 
+    // bl sets a link register, I don't know what that is.
+    ldr x0, =KernelMain
+    blr x0
+
     // if the kernel ever stops running, jump to our infinite loop
     b end

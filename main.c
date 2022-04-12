@@ -18,7 +18,7 @@ void KernelMain(void) {
     init_interrupt_controller();
     enable_irq();
 
-    //while (1) {
+    while (1) {
         // Just infinite loop as our proof of concept
-    //}
+    }
 }
