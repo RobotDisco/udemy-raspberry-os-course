@@ -39,4 +39,6 @@ SECTIONS
         *(.bss)
         bss_end = .;
     }
+
+    kernel_end = .;
 }

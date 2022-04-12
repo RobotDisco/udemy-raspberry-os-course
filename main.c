@@ -3,6 +3,7 @@
 #include "uart.h"
 #include "print.h"
 #include "handler.h"
+#include "memory.h"
 
 void KernelMain(void) {
     uint64_t value = 0x1234567890ACBDEF;
@@ -14,6 +15,7 @@ void KernelMain(void) {
 
     printk("Current ARM exception level: %u\r\n", (uint64_t) get_el());
     
+    init_memory();
     init_timer();
     init_interrupt_controller();
     enable_irq();

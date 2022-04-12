@@ -16,7 +16,7 @@ LD := aarch64-unknown-linux-gnu-ld
 # $< - first prerequisite
 # $^ - all prerequisites
 
-OBJECTS :=  boot.o debug.o handler.o handlera.o lib.o main.o mmu.o print.o uart.o
+OBJECTS :=  boot.o debug.o handler.o handlera.o lib.o main.o memory.o mmu.o print.o uart.o
 LINK_SCRIPT := link_script.lds
 
 # Convert our linked ELF binary into a raw one (termed "binary")
@@ -41,6 +41,8 @@ handler.o: handler.c
 print.o: print.c
 	$(CC) -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@
 uart.o: uart.c
+	$(CC) -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@
+memory.o: memory.c
 	$(CC) -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@
 
 boot.o: boot.s
