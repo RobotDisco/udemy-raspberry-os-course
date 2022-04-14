@@ -10,6 +10,19 @@
 // Public procedures
 .global enable_mmu
 .global setup_vm
+.global load_pgd
+
+load_pgd:
+    // Update hardware TLB
+    msr ttbr0_el1, x0
+    // invalidate operation
+    tlbi vmalle1is
+    // wait for (TLB?) data to synchronize
+    dsb ish
+    // Flush instructions
+    isb
+
+    ret
 
 enable_mmu:
     adr x0, pgd_ttbr1
