@@ -155,9 +155,68 @@ bool map_page(uint64_t map, uint64_t v, uint64_t pa, uint64_t attr) {
    return true;
 }
 
+void free_page(uint64_t map, uint64_t vstart) {
+    unsigned int index;
+    uint64_t *ptr = NULL;
+
+    ASSERT(vstart % PAGE_SIZE == 0);
+
+    ptr = find_pud_entry(map, vstart, 0, 0);
+
+    if (ptr != NULL) {
+        index = (vstart >> 21) & 0x1ff;
+
+        if (ptr[index] & VALID_ENTRY) {
+            kfree(P2VMem(PAGE_TABLE_ADDR(ptr[index])));
+            ptr[index] = 0;
+        }
+    }
+}
+
 void init_memory(void) {
     free_region((uint64_t)&kernel_end, MEMORY_END);
     //print_memory();
+}
+
+static void free_pmd(uint64_t map) {
+    uint64_t *pgd = (uint64_t*)map;
+    uint64_t *pud = NULL;
+
+    for (int i = 0; i < 512; ++i) {
+        if (pgd[i] & VALID_ENTRY) {
+            pud = (uint64_t*)P2VMem(PAGE_DIR_ADDR(pgd[i]));
+
+            for (int j = 0; j < 512; ++j) {
+                if (pud[j] & VALID_ENTRY) {
+                    kfree(P2VMem(PAGE_DIR_ADDR(pud[j])));
+                    pud[j] = 0;
+                }
+            }
+
+        }
+    }
+}
+
+static void free_pud(uint64_t map) {
+    uint64_t *pgd = (uint64_t*)map;
+
+    for (int i = 0; i < 512; ++i) {
+        if (pgd[i] & VALID_ENTRY) {
+            kfree(P2VMem(PAGE_DIR_ADDR(pgd[i])));
+            pgd[i] = 0;
+        }
+    }
+}
+
+static void free_pgd(uint64_t map) {
+    kfree(map);
+}
+
+void free_vm(uint64_t map) {
+    free_page(map, 0x400000);
+    free_pmd(map);
+    free_pud(map);
+    free_pgd(map);
 }
 
 bool setup_uvm(void) {

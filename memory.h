@@ -30,7 +30,7 @@ struct Page {
 
 // Strip the flags from a page entry to just get the memory address
 #define PAGE_DIR_ADDR(p) ((uint64_t)p & 0xfffffffff000)
-#define PAGE_TABLE_ADDR(p) ((unit64_t)p & 0xffffffe00000)
+#define PAGE_TABLE_ADDR(p) ((uint64_t)p & 0xffffffe00000)
 
 // Attributes found in page table entries
 #define VALID_ENTRY (1 << 0)
