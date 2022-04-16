@@ -1,3 +1,9 @@
+// The base memory address we have allocated for our filesystem
+.equ FS_BASE, 0xffff000030000000
+// The size of our "disk" image;
+// cylinders * heads * sectors per head * sector size (bytes)
+.equ FS_SIZE, 101*16*63*512
+
 # TODO write-up about the .text, .bss, .rodata, .bss sections
 
 .section .text
@@ -68,6 +74,12 @@ el1_entry:
     // setup virtual memory and MMU
     bl setup_vm
     bl enable_mmu
+
+    // load file system "disk" image into memory
+    ldr x0, =FS_BASE
+    ldr x1, =bss_start
+    ldr x2, =FS_SIZE
+    bl memcpy
 
     // zero out the bss region
     // we are assuming that the value at address 0 is 0.

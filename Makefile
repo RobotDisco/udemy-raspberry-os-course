@@ -16,12 +16,14 @@ LD := aarch64-unknown-linux-gnu-ld
 # $< - first prerequisite
 # $^ - all prerequisites
 
-OBJECTS :=  boot.o debug.o handler.o handlera.o lib.o main.o memory.o mmu.o print.o uart.o
+OBJECTS :=  boot.o debug.o file.o handler.o handlera.o lib.o main.o memory.o mmu.o print.o uart.o
 LINK_SCRIPT := link_script.lds
 
 # Convert our linked ELF binary into a raw one (termed "binary")
 kernel8.img: kernel
 	aarch64-unknown-linux-gnu-objcopy -O binary $^ $@
+# Append filesystem to the end of the kernel binary
+	dd if=os.img >> $@
 
 # Link our object files without including the C standard library functions.
 kernel: $(LINK_SCRIPT) $(OBJECTS)
@@ -35,6 +37,8 @@ kernel: $(LINK_SCRIPT) $(OBJECTS)
 main.o: main.c
 	$(CC) -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@
 debug.o: debug.c
+	$(CC) -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@
+file.o: file.c
 	$(CC) -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@
 handler.o: handler.c
 	$(CC) -std=c99 -ffreestanding -mgeneral-regs-only -c $^ -o $@

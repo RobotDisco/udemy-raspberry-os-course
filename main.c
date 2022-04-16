@@ -4,6 +4,7 @@
 #include "print.h"
 #include "handler.h"
 #include "memory.h"
+#include "file.h"
 
 void KernelMain(void) {
     uint64_t value = 0x1234567890ACBDEF;
@@ -16,9 +17,10 @@ void KernelMain(void) {
     printk("Current ARM exception level: %u\r\n", (uint64_t) get_el());
     
     init_memory();
+    init_fs();
     init_timer();
     init_interrupt_controller();
-    enable_irq();
+    //enable_irq();
 
     while (1) {
         // Just infinite loop as our proof of concept
