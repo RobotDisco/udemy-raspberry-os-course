@@ -16,8 +16,8 @@ SECTIONS
      * After that include them from all the inputs
      */
     .text : {
-        boot.o(.text)
-        *(.text)
+        build/boot.s.o(.text)
+        build/*(.text)
     }
     
     /* Include any rodata definitions from all our input files */
