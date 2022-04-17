@@ -18,20 +18,22 @@ CFLAGS := -std=c99 -ffreestanding -mgeneral-regs-only
 # Here's the ultimate deliverable of our project
 TARGET := kernel8.img
 
-# Use find to fine every C and assembler (.s) file
+# Use find to find every C and assembler (.s) file
 SRCS := $(shell find $(SRC_DIR) -name '*.c' -or -name '*.s')
 
 # Define objects as the source files but with a .o extension
+# % is text to preserve in the substition pattern.
 OBJS := $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%.o,$(SRCS))
 
 # Build a dependency file (makes handling header file updates easier)
+# This is a shortform for $(patsubst %.o,%.d,$(OBJS))
 DEPS := $(OBJS:.o=.d)
 
-# Include the current directory as having .h files
+# Include $(SRC_DIR) and all subdirectories as having .h files
 INC_DIRS := $(shell find $(SRC_DIR) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-# The -MMD and -MP flags together generate Makefiles for us!
+# The -MMD and -MP flags together generate Makefiles for us for header files!
 # These files will have .d instead of .o as the output.
 CPPFLAGS := $(INC_FLAGS) -MMD -MP
 
@@ -61,17 +63,22 @@ $(BUILD_DIR)/kernel: $(SRC_DIR)/link_script.lds $(OBJS)
 
 # We need .c.o and .s.o extensions because we need to have disambiguity
 # in our rules, we can't have make just figure out that a .o rule only
-# applies to .s files or .o files.
+# applies to .s files or .c files.
 $(BUILD_DIR)/%.c.o: $(SRC_DIR)/%.c
+# Create build/ if it doesn't exist already
 	mkdir -p $(dir $@)	
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 # How to turn .s files into .o files
 $(BUILD_DIR)/%.s.o: $(SRC_DIR)/%.s
+# Create build/ if it doesn't exist already
 	mkdir -p $(dir $@)
 	$(CC) -c $< -o $@
 
-# clean is not a file, so don't look for one
+# Don't look for files with the name of these targets, just run them.
+# This prevents cases where a equally named file will prevent the tasks
+# from running because make thinks the file is unchanged and thus the
+# target doesn't need to be run.
 .PHONY: clean run
 
 clean:
