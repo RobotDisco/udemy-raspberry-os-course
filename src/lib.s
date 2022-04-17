@@ -3,10 +3,10 @@
 .global in_word
 .global out_word
 
-.global memset
+.global memcmp
 .global memcpy
 .global memmove
-.global memcpy
+.global memset
 
 .global get_el
 
