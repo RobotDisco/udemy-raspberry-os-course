@@ -22,6 +22,7 @@ TARGET := kernel8.img
 SRCS := $(shell find $(SRC_DIR) -name '*.c' -or -name '*.s')
 
 # Define objects as the source files but with a .o extension
+# Also replace src/ with build/
 # % is text to preserve in the substition pattern.
 OBJS := $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%.o,$(SRCS))
 
